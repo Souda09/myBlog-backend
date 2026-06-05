@@ -151,8 +151,8 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie']
 }));
 
-// // Handle preflight requests
-// app.options('*', cors());
+// Handle preflight requests
+app.options('*', cors());
 
 // Middleware
 app.use(express.json());
