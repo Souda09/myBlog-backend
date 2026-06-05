@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
@@ -27,8 +28,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  origin:[ process.env.CLIENT_URL || 'https://blog-app-frontend-iota-one.vercel.app/', 'http://localhost:5173'],
+    credentials: true
 }));
 
 // Static files (for local development)
