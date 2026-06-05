@@ -37,26 +37,30 @@
 
 // backend/middleware/upload.js
 import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import sharp from 'sharp';
-import fs from 'fs';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from '../config/cloudinary.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Cloudinary storage configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'blog-images',        // Cloudinary folder name
+    format: async (req, file) => 'webp',  // Convert to webp
+    public_id: (req, file) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      return `blog-${uniqueSuffix}`;
+    },
+    transformation: [
+      { width: 1200, height: 800, crop: 'limit' },
+      { quality: 'auto' }
+    ]
+  }
+});
 
-// Ensure uploads directory exists
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
-
-// Use memory storage for sharp processing
-const storage = multer.memoryStorage();
-
+// File filter - sirf images allow hain
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = allowedTypes.test(file.originalname.toLowerCase());
   const mimetype = allowedTypes.test(file.mimetype);
   
   if (mimetype && extname) {
@@ -66,46 +70,9 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// Multer upload middleware
 export const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: fileFilter
 });
-
-// Process image with sharp - high quality
-export const processImage = async (req, res, next) => {
-  if (!req.file) {
-    return next();
-  }
-  
-  try {
-    // Generate unique filename
-    const timestamp = Date.now();
-    const random = Math.round(Math.random() * 1E9);
-    const filename = `${timestamp}-${random}.webp`;
-    const outputPath = path.join('uploads', filename);
-    
-    // Process image with sharp - HIGH QUALITY settings
-    await sharp(req.file.buffer)
-      .resize(1600, 1200, { 
-        fit: 'inside', 
-        withoutEnlargement: false,
-        kernel: 'lanczos3' // High quality resampling
-      })
-      .webp({ 
-        quality: 92,  // High quality (0-100)
-        effort: 6,    // More effort = better quality
-        lossless: false
-      })
-      .toFile(outputPath);
-    
-    // Store filename in req.file
-    req.file.filename = filename;
-    req.file.path = outputPath;
-    
-    next();
-  } catch (error) {
-    console.error('Image processing error:', error);
-    next(error);
-  }
-};
