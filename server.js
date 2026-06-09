@@ -47,6 +47,8 @@
 
 
 import express from 'express';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -54,35 +56,85 @@ dotenv.config();
 
 const app = express();
 
-// Simple CORS
+// CORS
 app.use(cors({
-  origin: '*',
+  origin: true,
   credentials: true
 }));
 
 app.use(express.json());
+app.use(cookieParser());
 
-// Health check
+// Simple route for testing
 app.get('/', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'API is running on Vercel',
-    time: new Date().toISOString()
+  res.json({
+    success: true,
+    message: 'Blog API is running on Vercel',
+    timestamp: new Date().toISOString()
   });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK' });
+  res.json({
+    success: true,
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Test route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Test route works!' });
-});
+// MongoDB connection (cached for serverless)
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) return;
+  
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = true;
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+  }
+};
+
+// Import routes after DB connection
+let authRoutes, blogRoutes;
+
+// Dynamic imports to avoid circular dependencies
+const loadRoutes = async () => {
+  authRoutes = (await import('./routes/authRoutes.js')).default;
+  blogRoutes = (await import('./routes/blogRoutes.js')).default;
+  
+  app.use('/api/auth', authRoutes);
+  app.use('/api/blogs', blogRoutes);
+};
+
+loadRoutes();
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({
+    success: false,
+    message: err.message || 'Internal server error'
+  });
+});
+
+// Connect to DB on first request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
 });
 
 export default app;
