@@ -43,67 +43,46 @@
 
 
 
+
+
+
 import express from 'express';
-import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
-import dns from 'dns';
 
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
 dotenv.config();
 
 const app = express();
 
-// CORS - Dynamic origin for production vs local
-const allowedOrigin = process.env.NODE_ENV === 'production' 
-  ? process.env.CLIENT_URL // Set your frontend Vercel URL in your env variables
-  : 'http://localhost:5173';
-
+// Simple CORS
 app.use(cors({
-  origin: allowedOrigin,
+  origin: '*',
   credentials: true
 }));
 
 app.use(express.json());
-app.use(cookieParser());
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/blogs', blogRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server running' });
-});
-
-// Serverless-friendly MongoDB Connection
-let isConnected = false;
-const connectDB = async () => {
-  if (isConnected) return;
-  try {
-    const db = await mongoose.connect(process.env.MONGODB_URI);
-    isConnected = db.connections[0].readyState;
-    console.log('✅ MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-  }
-};
-
-// Middleware to ensure DB is connected on every serverless function invocation
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
-
-// CRITICAL FOR VERCEL: Export the app, DO NOT use app.listen() in production
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running locally on http://localhost:${PORT}`);
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'API is running on Vercel',
+    time: new Date().toISOString()
   });
-}
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK' });
+});
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test route works!' });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 export default app;
