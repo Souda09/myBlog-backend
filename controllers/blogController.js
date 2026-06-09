@@ -1,356 +1,6 @@
-// import Blog from '../models/Blog.js';
-
-// export const getAllBlogs = async (req, res) => {
-//   try {
-//     const blogs = await Blog.find()
-//       .populate('author', 'name email')
-//       .sort('-createdAt');
-    
-//     res.json({
-//       success: true,
-//       count: blogs.length,
-//       blogs
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// export const getUserBlogs = async (req, res) => {
-//   try {
-//     const blogs = await Blog.find({ author: req.userId })
-//       .populate('author', 'name email')
-//       .sort('-createdAt');
-    
-//     res.json({
-//       success: true,
-//       count: blogs.length,
-//       blogs
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// export const getSingleBlog = async (req, res) => {
-//   try {
-//     const blog = await Blog.findById(req.params.id)
-//       .populate('author', 'name email');
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     res.json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// export const createBlog = async (req, res) => {
-//   try {
-//     const { title, content } = req.body;
-//     const image = req.file ? `/uploads/${req.file.filename}` : null;
-    
-//     const blog = await Blog.create({
-//       title,
-//       content,
-//       image,
-//       author: req.userId
-//     });
-    
-//     await blog.populate('author', 'name email');
-    
-//     res.status(201).json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// export const updateBlog = async (req, res) => {
-//   try {
-//     let blog = await Blog.findById(req.params.id);
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     if (blog.author.toString() !== req.userId) {
-//       return res.status(403).json({
-//         success: false,
-//         message: 'Forbidden - You can only edit your own blogs'
-//       });
-//     }
-    
-//     const { title, content } = req.body;
-//     const image = req.file ? `/uploads/${req.file.filename}` : blog.image;
-    
-//     blog = await Blog.findByIdAndUpdate(
-//       req.params.id,
-//       { title, content, image },
-//       { new: true, runValidators: true }
-//     ).populate('author', 'name email');
-    
-//     res.json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// export const deleteBlog = async (req, res) => {
-//   try {
-//     const blog = await Blog.findById(req.params.id);
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     if (blog.author.toString() !== req.userId) {
-//       return res.status(403).json({
-//         success: false,
-//         message: 'Forbidden - You can only delete your own blogs'
-//       });
-//     }
-    
-//     await blog.deleteOne();
-    
-//     res.json({
-//       success: true,
-//       message: 'Blog deleted successfully'
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-
-
-
-
-
-
-
-// backend/controllers/blogController.js
-// import Blog from '../models/Blog.js';
-
-// // @desc    Get all blogs
-// // @route   GET /api/blogs
-// // @access  Public
-// export const getAllBlogs = async (req, res) => {
-//   try {
-//     const blogs = await Blog.find()
-//       .populate('author', 'name email')
-//       .sort('-createdAt');
-    
-//     res.json({
-//       success: true,
-//       count: blogs.length,
-//       blogs
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// // @desc    Get user's blogs
-// // @route   GET /api/blogs/my-blogs
-// // @access  Private
-// export const getUserBlogs = async (req, res) => {
-//   try {
-//     const blogs = await Blog.find({ author: req.userId })
-//       .populate('author', 'name email')
-//       .sort('-createdAt');
-    
-//     res.json({
-//       success: true,
-//       count: blogs.length,
-//       blogs
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// // @desc    Get single blog
-// // @route   GET /api/blogs/:id
-// // @access  Public
-// export const getSingleBlog = async (req, res) => {
-//   try {
-//     const blog = await Blog.findById(req.params.id)
-//       .populate('author', 'name email');
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     res.json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// // @desc    Create blog
-// // @route   POST /api/blogs
-// // @access  Private
-// export const createBlog = async (req, res) => {
-//   try {
-//     const { title, content } = req.body;
-//     const image = req.file ? `/uploads/${req.file.filename}` : null;
-    
-//     const blog = await Blog.create({
-//       title,
-//       content,
-//       image,
-//       author: req.userId
-//     });
-    
-//     await blog.populate('author', 'name email');
-    
-//     res.status(201).json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// // @desc    Update blog
-// // @route   PUT /api/blogs/:id
-// // @access  Private
-// export const updateBlog = async (req, res) => {
-//   try {
-//     let blog = await Blog.findById(req.params.id);
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     if (blog.author.toString() !== req.userId) {
-//       return res.status(403).json({
-//         success: false,
-//         message: 'Forbidden - You can only edit your own blogs'
-//       });
-//     }
-    
-//     const { title, content } = req.body;
-//     const image = req.file ? `/uploads/${req.file.filename}` : blog.image;
-    
-//     blog = await Blog.findByIdAndUpdate(
-//       req.params.id,
-//       { title, content, image },
-//       { new: true, runValidators: true }
-//     ).populate('author', 'name email');
-    
-//     res.json({
-//       success: true,
-//       blog
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-// // @desc    Delete blog
-// // @route   DELETE /api/blogs/:id
-// // @access  Private
-// export const deleteBlog = async (req, res) => {
-//   try {
-//     const blog = await Blog.findById(req.params.id);
-    
-//     if (!blog) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Blog not found'
-//       });
-//     }
-    
-//     if (blog.author.toString() !== req.userId) {
-//       return res.status(403).json({
-//         success: false,
-//         message: 'Forbidden - You can only delete your own blogs'
-//       });
-//     }
-    
-//     await blog.deleteOne();
-    
-//     res.json({
-//       success: true,
-//       message: 'Blog deleted successfully'
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
-
-// backend/controllers/blogController.js
 import Blog from '../models/Blog.js';
 
-// @desc    Get all blogs
+// @desc    Get all blogs (public)
 export const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find()
@@ -359,7 +9,6 @@ export const getAllBlogs = async (req, res) => {
     
     res.json({
       success: true,
-      count: blogs.length,
       blogs
     });
   } catch (error) {
@@ -370,19 +19,22 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
-// @desc    Get user's blogs
+// @desc    Get ONLY current user's blogs (private)
 export const getUserBlogs = async (req, res) => {
   try {
+    // ✅ Sirf current user ke blogs find karo
     const blogs = await Blog.find({ author: req.userId })
       .populate('author', 'name email')
       .sort('-createdAt');
     
+    console.log(`Found ${blogs.length} blogs for user: ${req.userId}`);
+    
     res.json({
       success: true,
-      count: blogs.length,
       blogs
     });
   } catch (error) {
+    console.error('Error in getUserBlogs:', error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -442,10 +94,10 @@ export const createBlog = async (req, res) => {
   }
 };
 
-// @desc    Update blog
+// @desc    Update blog (only if owner)
 export const updateBlog = async (req, res) => {
   try {
-    let blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(req.params.id);
     
     if (!blog) {
       return res.status(404).json({
@@ -454,25 +106,26 @@ export const updateBlog = async (req, res) => {
       });
     }
     
+    // ✅ Check if user is the author
     if (blog.author.toString() !== req.userId) {
       return res.status(403).json({
         success: false,
-        message: 'Forbidden - You can only edit your own blogs'
+        message: 'You can only edit your own blogs'
       });
     }
     
     const { title, content } = req.body;
     const image = req.file ? req.file.path : blog.image;
     
-    blog = await Blog.findByIdAndUpdate(
+    const updatedBlog = await Blog.findByIdAndUpdate(
       req.params.id,
       { title, content, image },
-      { new: true, runValidators: true }
+      { new: true }
     ).populate('author', 'name email');
     
     res.json({
       success: true,
-      blog
+      blog: updatedBlog
     });
   } catch (error) {
     res.status(400).json({
@@ -482,7 +135,7 @@ export const updateBlog = async (req, res) => {
   }
 };
 
-// @desc    Delete blog
+// @desc    Delete blog (only if owner)
 export const deleteBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
@@ -494,10 +147,11 @@ export const deleteBlog = async (req, res) => {
       });
     }
     
+    // ✅ Check if user is the author
     if (blog.author.toString() !== req.userId) {
       return res.status(403).json({
         success: false,
-        message: 'Forbidden - You can only delete your own blogs'
+        message: 'You can only delete your own blogs'
       });
     }
     

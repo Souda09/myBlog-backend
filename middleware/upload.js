@@ -2,16 +2,16 @@ import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary.js';
 
-// ✅ Cloudinary storage - Ye URL return karega
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'blog-images',
     format: async () => 'webp',
-    public_id: (req, file) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      return `blog-${uniqueSuffix}`;
-    }
+    public_id: (req, file) => `blog-${Date.now()}-${Math.random() * 1e9}`,
+    transformation: [
+      { width: 1200, height: 1200, crop: 'limit', quality: 'auto:best' },
+      { fetch_format: 'auto' }
+    ]
   }
 });
 
@@ -28,6 +28,6 @@ const fileFilter = (req, file, cb) => {
 
 export const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: fileFilter
 });

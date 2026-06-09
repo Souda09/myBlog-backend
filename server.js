@@ -1,355 +1,42 @@
-// // import express from 'express';
-// // import cookieParser from 'cookie-parser';
-// // import cors from 'cors';
-// // import dotenv from 'dotenv';
-// // import path from 'path';
-// // import { fileURLToPath } from 'url';
-// // import mongoose from 'mongoose';
-// // import connectDB from './config/db.js';
-// // import authRoutes from './routes/authRoutes.js';
-// // import blogRoutes from './routes/blogRoutes.js';
-// // import dns from 'dns';
-
-// // // DNS settings for MongoDB connection
-// // dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
-// // dotenv.config();
-
-// // const __filename = fileURLToPath(import.meta.url);
-// // const __dirname = path.dirname(__filename);
-
-// // // Connect to MongoDB
-// // connectDB();
-
-// // const app = express();
-// // const PORT = process.env.PORT || 5000;
-
-// // // Middleware
-// // app.use(express.json());
-// // app.use(cookieParser());
-// // app.use(cors({
-// //   origin:[ process.env.CLIENT_URL || 'https://blog-app-frontend-iota-one.vercel.app/', 'http://localhost:5173'],
-// //     credentials: true
-// // }));
-
-// // // Static files (for local development)
-// // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// // // ==================== ROUTES ====================
-
-// // // Root route - IMPORTANT for Vercel deployment
-// // app.get('/', (req, res) => {
-// //   res.json({ 
-// //     status: 'OK', 
-// //     message: 'Blog API is running on Vercel 🚀',
-// //     timestamp: new Date().toISOString(),
-// //     endpoints: {
-// //       health: '/api/health',
-// //       auth: '/api/auth',
-// //       blogs: '/api/blogs'
-// //     }
-// //   });
-// // });
-
-// // // API routes
-// // app.use('/api/auth', authRoutes);
-// // app.use('/api/blogs', blogRoutes);
-
-// // // Health check endpoint
-// // app.get('/api/health', (req, res) => {
-// //   res.json({ 
-// //     status: 'OK', 
-// //     message: 'Server is running',
-// //     timestamp: new Date().toISOString(),
-// //     mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-// //   });
-// // });
-
-// // // 404 handler for undefined routes
-// // app.use((req, res) => {
-// //   res.status(404).json({
-// //     success: false,
-// //     message: `Route not found: ${req.method} ${req.url}`
-// //   });
-// // });
-
-// // // Global error handler
-// // app.use((err, req, res, next) => {
-// //   console.error('Error:', err.stack);
-// //   res.status(500).json({
-// //     success: false,
-// //     message: 'Something went wrong!',
-// //     error: process.env.NODE_ENV === 'development' ? err.message : {}
-// //   });
-// // });
-
-// // // Import mongoose for health check
-// // import mongoose from 'mongoose';
-
-// // // Start server (only for local development - not on Vercel)
-// // if (process.env.NODE_ENV !== 'production') {
-// //   app.listen(PORT, () => {
-// //     console.log(`🚀 Server running on port ${PORT}`);
-// //     console.log(`📍 http://localhost:${PORT}`);
-// //   });
-// // }
-
-// // // Export app for Vercel serverless deployment
-// // export default app;
-
-
-
-// import express from 'express';
-// import cookieParser from 'cookie-parser';
-// import cors from 'cors';
-// import dotenv from 'dotenv';
-// import path from 'path';
-// import { fileURLToPath } from 'url';
-// import mongoose from 'mongoose';
-// import connectDB from './config/db.js';
-// import authRoutes from './routes/authRoutes.js';
-// import blogRoutes from './routes/blogRoutes.js';
-// import dns from 'dns';
-
-// // DNS settings for MongoDB connection
-// dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
-// dotenv.config();
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-// // Connect to MongoDB
-// connectDB();
-
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// // ✅ CORS Configuration - FIXED
-// const allowedOrigins = [
-//   'https://blog-app-frontend-iota-one.vercel.app',
-//   'https://blog-app-frontend-iota-one.vercel.app/',
-//   'http://localhost:5173',
-//   'http://localhost:3000'
-// ];
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl)
-//     if (!origin) return callback(null, true);
-    
-//     if (allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       console.log('Blocked origin:', origin);
-//       callback(null, true); // Allow all for now (temporary fix)
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie'],
-//   exposedHeaders: ['Set-Cookie']
-// }));
-
-// // Handle preflight requests
-// app.options('*', cors());
-
-// // Middleware
-// app.use(express.json());
-// app.use(cookieParser());
-
-// // Static files (for local development)
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// // ==================== ROUTES ====================
-
-// // Root route
-// app.get('/', (req, res) => {
-//   res.json({ 
-//     status: 'OK', 
-//     message: 'Blog API is running on Vercel 🚀',
-//     timestamp: new Date().toISOString(),
-//     endpoints: {
-//       health: '/api/health',
-//       auth: '/api/auth',
-//       blogs: '/api/blogs'
-//     }
-//   });
-// });
-
-// // API routes
-// app.use('/api/auth', authRoutes);
-// app.use('/api/blogs', blogRoutes);
-
-// // Health check endpoint
-// app.get('/api/health', (req, res) => {
-//   res.json({ 
-//     status: 'OK', 
-//     message: 'Server is running',
-//     timestamp: new Date().toISOString(),
-//     mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-//   });
-// });
-
-// // 404 handler
-// app.use((req, res) => {
-//   res.status(404).json({
-//     success: false,
-//     message: `Route not found: ${req.method} ${req.url}`
-//   });
-// });
-
-// // Global error handler
-// app.use((err, req, res, next) => {
-//   console.error('Error:', err.stack);
-//   res.status(500).json({
-//     success: false,
-//     message: 'Something went wrong!',
-//     error: process.env.NODE_ENV === 'development' ? err.message : {}
-//   });
-// });
-
-// // Start server (only for local development)
-// if (process.env.NODE_ENV !== 'production') {
-//   app.listen(PORT, () => {
-//     console.log(`🚀 Server running on port ${PORT}`);
-//     console.log(`📍 http://localhost:${PORT}`);
-//   });
-// }
-
-// // Export app for Vercel
-// export default app;
-
-
-
-
-
-
-
-
 import express from 'express';
+import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import mongoose from 'mongoose';
-import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
-import dns from 'dns';
 
-// DNS settings for MongoDB connection
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+import dns from 'dns'
 
+dns.setServers(["8.8.8.8", "1.1.1.1"])
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Connect to MongoDB
-connectDB();
-
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// ✅ SAFEST CORS CONFIGURATION FOR VERCEL
-const allowedOrigins = [
-  'https://blog-app-frontend-iota-one.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:3000'
-];
-
+// CORS
 app.use(cors({
-  origin: function (origin, callback) {
-    // Agar request same server se ho (no origin) ya allowed list me ho
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Set-Cookie']
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
 
-// ✅ FIXED FOR EXPRESS v5: '*' ki jagah regex /^\/(.*)/ use kiya hai taaki crash na ho
-app.options(/^\/(.*)/, (req, res) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, Set-Cookie, X-Requested-With, Accept');
-  return res.sendStatus(200);
-});
-
-// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// Static files (Cloudinary lagane ke baad iski zaroorat nahi padegi, par abhi rakha hai)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// ==================== ROUTES ====================
-
-// Root route
-app.get('/', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Blog API is running on Vercel 🚀',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      health: '/api/health',
-      auth: '/api/auth',
-      blogs: '/api/blogs'
-    }
-  });
-});
-
-// API routes
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-  });
+  res.json({ status: 'OK', message: 'Server running' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.url}`
-  });
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/blogapp')
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('MongoDB error:', err));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
-  });
-});
-
-// Start server (only for local development)
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 http://localhost:${PORT}`);
-  });
-}
-
-// Export app for Vercel
-export default app;
