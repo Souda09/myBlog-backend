@@ -151,8 +151,12 @@ dotenv.config();
 const app = express();
 
 // CORS
+// ✅ Sahi
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    'https://my-blog-frontend-skxv.vercel.app',
+    'http://localhost:5173'
+  ],
   credentials: true
 }));
 
