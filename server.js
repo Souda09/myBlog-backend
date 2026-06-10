@@ -153,10 +153,18 @@ const app = express();
 // CORS
 // ✅ Sahi
 app.use(cors({
-  origin: [
-    'https://my-blog-frontend-skxv.vercel.app',
-    'http://localhost:5173'
-  ],
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'https://my-blog-frontend-skxv.vercel.app',
+      'https://my-blog-frontend-skxv-git-master-souda09s-projects.vercel.app',
+      'http://localhost:5173'
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true
 }));
 
